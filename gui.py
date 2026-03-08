@@ -216,30 +216,30 @@ class MainGameWindow(Window) :
         self.blackbase = QLabel(self)
         self.blackbase.setPixmap(QPixmap("assets/MainGameWindow/BlackBase.png"))
         self.blackbase.setScaledContents(True)
-        self.blackbase.setGeometry(1460,335,350,400)
+        self.blackbase.setGeometry(1460,333,350,400)
         self.bookCase = InteractiveImage(
             "assets/MainGameWindow/BookcaseMainGame.png",
-            -45, 120, 550, 800,
+            0, 200, 300, 600,
             self
         )
         self.computer = InteractiveImage(
             "assets/MainGameWindow/ComputerMainGame.png",
-            320, 250, 830, 700,
+            460, 345, 450, 500,
             self
         )
         self.beg = InteractiveImage(
             "assets/MainGameWindow/BegMainGame.png",
-            210, 540, 430, 420,
+            200, 590, 300, 290,
             self
         )
         self.door = InteractiveImage(
             "assets/MainGameWindow/DoorMainGame.png",
-            1240, -30, 800, 1000,
+            1430, 95, 410, 650,
             self
         )
         self.bed = InteractiveImage(
             "assets/MainGameWindow/BedMainGame.png",
-            860, 250, 750, 1000,
+            940, 400, 550, 600,
             self
         )
         self.build_hud()
