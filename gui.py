@@ -32,8 +32,8 @@ class MainWindow(QMainWindow) :
         self.setCentralWidget(new_window)
 
     def game_tick(self):
-        self.player.charge_hunger(0.1)
-        self.player.charge_thirst(0.1)
+        self.player.charge_hunger(0.01)
+        self.player.charge_thirst(0.01)
 
         if (
         self.player.hunger >= self.player.max_hunger
@@ -84,6 +84,7 @@ class Window(QWidget) :
         self.health_bar_max_width = 250
         self.thirst_bar_max_width = 250
         self.hunger_bar_max_width = 250
+        self.sleep_bar_max_width = 250
         self.health_fill = QLabel(self)
         self.health_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBarHealth.png"))
         self.health_fill.setScaledContents(True)
@@ -138,6 +139,10 @@ class Window(QWidget) :
         self.label_money.setStyleSheet("color: white;")
         self.label_money.setFont(font)
         self.label_money.setGeometry(40, 160, 350, 40)
+        self.label_sleep = QLabel("Hours Left: " + str(self.player.sleep), self)
+        self.label_sleep.setStyleSheet("color: white;")
+        self.label_sleep.setFont(font)
+        self.label_sleep.setGeometry(40, 190, 350, 40)
     
     def update_status_bar(self, bar_fill, current_value, max_value, max_width):
         if current_value < 0:
@@ -153,6 +158,7 @@ class Window(QWidget) :
     def update_status_hud(self) :
         self.label_dev_skill.setText("Dev Skill: " + str(self.player.dev_skill))
         self.label_money.setText("Money: $" + str(self.player.money))
+        self.label_sleep.setText("Hours Left: " + str(self.player.sleep))
 
 class MainMenuWindow(Window) :
     def __init__(self, main_window, player) :
@@ -262,30 +268,30 @@ class MainGameWindow(Window) :
         self.blackbase = QLabel(self)
         self.blackbase.setPixmap(QPixmap("assets/MainGameWindow/BlackBase.png"))
         self.blackbase.setScaledContents(True)
-        self.blackbase.setGeometry(1460,333,350,400)
+        self.blackbase.setGeometry(1460,393,350,400)
         self.bookCase = InteractiveImage(
             "assets/MainGameWindow/BookcaseMainGame.png",
-            0, 200, 300, 600,
+            20, 260, 300, 600,
             self
         )
         self.computer = InteractiveImage(
             "assets/MainGameWindow/ComputerMainGame.png",
-            460, 345, 450, 500,
+            460, 405, 450, 500,
             self
         )
         self.beg = InteractiveImage(
             "assets/MainGameWindow/BegMainGame.png",
-            200, 590, 300, 290,
+            200, 650, 300, 290,
             self
         )
         self.door = InteractiveImage(
             "assets/MainGameWindow/DoorMainGame.png",
-            1430, 95, 410, 650,
+            1430, 155, 410, 650,
             self
         )
         self.bed = InteractiveImage(
             "assets/MainGameWindow/BedMainGame.png",
-            940, 400, 550, 600,
+            940, 460, 550, 600,
             self
         )
         self.build_hud_status_player()
@@ -332,7 +338,31 @@ class StudyWindow(Window) :
         self.label_study2.setFont(font2)
         self.label_study2.setGeometry(815, 840, 450, 40)
 
-        self.book_study.clicked.connect(lambda : self.player.charge_dev_skill(1))
+        self.book_study.clicked.connect(self.study_action)
+
+        self.back_button = QPushButton("Back", self)
+        self.back_button.setGeometry(1700,985,200,50)
+        self.back_button.setFont(font)
+        self.back_button.setStyleSheet("""
+            QPushButton {
+                background-color: #1a1a1a;
+                color: white;
+                font-size: 24px;
+                border-radius: 10px;
+            }
+            QPushButton:hover {
+                background-color: #2a2a2a;
+            }
+            QPushButton:pressed {
+                background-color: #0f0f0f;
+            }
+            """)
+        self.back_button.clicked.connect(lambda : self.main_window.charge_window(MainGameWindow))
+
+    def study_action(self):
+        if self.player.sleep >= 3:
+            self.player.charge_dev_skill(1)
+            self.player.charge_sleep(-3)
 
 class FeedingWindow(Window) :
     def __init__(self, main_window, player) :

@@ -5,10 +5,12 @@ class Player :
         self.hunger = 0
         self.dev_skill = 1
         self.money = 0
+        self.sleep = 16
 
         self.max_health = 100
         self.max_thirst = 100
         self.max_hunger = 100
+        self.max_sleep = 16
 
     def charge_health(self, amount) :
         self.health += amount
@@ -39,3 +41,11 @@ class Player :
 
     def charge_money(self, amount) :
         self.money += amount
+
+    def charge_sleep(self, amount) :
+        self.sleep += amount
+
+        if self.sleep < 0 :
+            self.sleep = 0
+        if self.sleep > self.max_sleep :
+            self.sleep = self.max_sleep
