@@ -22,10 +22,55 @@ class MainWindow(QMainWindow) :
         self.resize(1920,1080)
 
         self.charge_window(MainMenuWindow)
+
+        self.game_timer = QTimer(self)
+        self.game_timer.timeout.connect(self.game_tick)
+        self.game_timer.start(500)
     
     def charge_window(self, window_class) :
         new_window = window_class(self, self.player)
         self.setCentralWidget(new_window)
+
+    def game_tick(self):
+        self.player.charge_hunger(0.1)
+        self.player.charge_thirst(0.1)
+
+        if (
+        self.player.hunger >= self.player.max_hunger
+        or self.player.thirst >= self.player.max_thirst
+        ):
+            self.player.charge_health(-0.5)
+        else:
+            self.player.charge_health(0.5)
+
+        current_window = self.centralWidget()
+
+        if hasattr(current_window, "update_status_hud"):
+            current_window.update_status_hud()
+
+        if hasattr(current_window, "health_fill"):
+            current_window.update_status_bar(
+            current_window.health_fill,
+            self.player.health,
+            self.player.max_health,
+            current_window.health_bar_max_width
+        )
+
+        if hasattr(current_window, "thirst_fill"):
+            current_window.update_status_bar(
+            current_window.thirst_fill,
+            self.player.thirst,
+            self.player.max_thirst,
+            current_window.thirst_bar_max_width
+        )
+
+        if hasattr(current_window, "hunger_fill"):
+            current_window.update_status_bar(
+            current_window.hunger_fill,
+            self.player.hunger,
+            self.player.max_hunger,
+            current_window.hunger_bar_max_width
+        )
 
 class Window(QWidget) :
     def __init__(self, main_window, player) :
@@ -34,26 +79,15 @@ class Window(QWidget) :
         self.player = player
         self.main_window = main_window
 
-    def build_hud(self) :
-        self.BackgroundStatusBarHealth = QLabel(self)
-        self.BackgroundStatusBarHealth.setPixmap(QPixmap("assets/MainGameWindow/BackgroundStatusBar.png"))
-        self.BackgroundStatusBarHealth.setScaledContents(True)
-        self.BackgroundStatusBarHealth.setGeometry(0, 0, 250, 45)
-        self.BackgroundStatusBarThirst = QLabel(self)
-        self.BackgroundStatusBarThirst.setPixmap(QPixmap("assets/MainGameWindow/BackgroundStatusBar.png"))
-        self.BackgroundStatusBarThirst.setScaledContents(True)
-        self.BackgroundStatusBarThirst.setGeometry(0, 40, 250, 45)
-        self.BackgroundStatusBarHunger = QLabel(self)
-        self.BackgroundStatusBarHunger.setPixmap(QPixmap("assets/MainGameWindow/BackgroundStatusBar.png"))
-        self.BackgroundStatusBarHunger.setScaledContents(True)
-        self.BackgroundStatusBarHunger.setGeometry(0, 80, 250, 45)
+    def build_hud_progress_bar(self) :
+        
         self.health_bar_max_width = 250
         self.thirst_bar_max_width = 250
         self.hunger_bar_max_width = 250
         self.health_fill = QLabel(self)
         self.health_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBarHealth.png"))
         self.health_fill.setScaledContents(True)
-        self.health_fill.setGeometry(0, 0, self.health_bar_max_width, 45)
+        self.health_fill.setGeometry(0, 2, self.health_bar_max_width, 45)
         self.update_status_bar(
             self.health_fill,
             self.player.health,
@@ -63,7 +97,7 @@ class Window(QWidget) :
         self.thirst_fill = QLabel(self)
         self.thirst_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBar.png"))
         self.thirst_fill.setScaledContents(True)
-        self.thirst_fill.setGeometry(0, 40, self.thirst_bar_max_width, 45)
+        self.thirst_fill.setGeometry(0, 45, self.thirst_bar_max_width, 45)
         self.update_status_bar(
             self.thirst_fill,
             self.player.thirst,
@@ -73,35 +107,37 @@ class Window(QWidget) :
         self.hunger_fill = QLabel(self)
         self.hunger_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBar.png"))
         self.hunger_fill.setScaledContents(True)
-        self.hunger_fill.setGeometry(0, 80, self.hunger_bar_max_width, 45)
+        self.hunger_fill.setGeometry(0, 88, self.hunger_bar_max_width, 45)
         self.update_status_bar(
             self.hunger_fill,
             self.player.hunger,
             self.player.max_hunger,
             self.hunger_bar_max_width
         )
+
+    def build_hud_status_player(self) :
         font = QFont()
         font.setPointSize(22)
         self.label_health = QLabel("HEALTH", self)
         self.label_health.setStyleSheet("color: white;")
         self.label_health.setFont(font)
-        self.label_health.setGeometry(70, 5, 220, 40)
+        self.label_health.setGeometry(70, 7, 220, 40)
         self.label_thirst = QLabel("THIRST", self)
         self.label_thirst.setStyleSheet("color: white;")
         self.label_thirst.setFont(font)
-        self.label_thirst.setGeometry(70, 45, 220, 40)
+        self.label_thirst.setGeometry(70, 49, 220, 40)
         self.label_hunger = QLabel("HUNGER", self) 
         self.label_hunger.setStyleSheet("color: white;")
         self.label_hunger.setFont(font)
-        self.label_hunger.setGeometry(60, 85, 220, 40)
+        self.label_hunger.setGeometry(60, 92, 220, 40)
         self.label_dev_skill = QLabel("Dev Skill: " + str(self.player.dev_skill), self)
         self.label_dev_skill.setStyleSheet("color: white;")
         self.label_dev_skill.setFont(font)
-        self.label_dev_skill.setGeometry(40, 120, 300, 40)
+        self.label_dev_skill.setGeometry(40, 130, 300, 40)
         self.label_money = QLabel("Money: $" + str(self.player.money), self)
         self.label_money.setStyleSheet("color: white;")
         self.label_money.setFont(font)
-        self.label_money.setGeometry(40, 150, 350, 40)
+        self.label_money.setGeometry(40, 160, 350, 40)
     
     def update_status_bar(self, bar_fill, current_value, max_value, max_width):
         if current_value < 0:
@@ -209,10 +245,20 @@ class MainGameWindow(Window) :
     def build_it(self) :
         self.setWindowTitle("- Main Game -")
         self.resize(1920, 1080)
+        self.base_background = QLabel(self)
+        self.base_background.setPixmap(QPixmap("assets/MainGameWindow/BaseBackgroundMain.png"))
+        self.base_background.setScaledContents(True)
+        self.base_background.setGeometry(0, 0, 1920, 1080)
+        self.build_hud_progress_bar()
         self.background = QLabel(self)
         self.background.setPixmap(QPixmap("assets/MainGameWindow/BackgroundMainGame.png"))
         self.background.setScaledContents(True)
         self.background.setGeometry(0, 0, 1920, 1080)
+        self.base_background.lower()
+        self.health_fill.raise_()
+        self.thirst_fill.raise_()
+        self.hunger_fill.raise_()
+        self.background.raise_()
         self.blackbase = QLabel(self)
         self.blackbase.setPixmap(QPixmap("assets/MainGameWindow/BlackBase.png"))
         self.blackbase.setScaledContents(True)
@@ -242,7 +288,12 @@ class MainGameWindow(Window) :
             940, 400, 550, 600,
             self
         )
-        self.build_hud()
+        self.build_hud_status_player()
+        self.bookCase.clicked.connect(lambda : self.main_window.charge_window(StudyWindow))
+        self.beg.clicked.connect(lambda : self.main_window.charge_window(FeedingWindow))
+        self.computer.clicked.connect(lambda : self.main_window.charge_window(WorkWindow))
+        self.bed.clicked.connect(lambda : self.main_window.charge_window(SleepingWindow))
+        self.door.clicked.connect(lambda : self.main_window.charge_window(UniversityWindow))
 
 class StudyWindow(Window) :
     def __init__(self, main_window, player) :
@@ -253,6 +304,35 @@ class StudyWindow(Window) :
     def build_it(self) :
         self.setWindowTitle("- Study -")
         self.resize(1920, 1080)
+        self.base_background = QLabel(self)
+        self.base_background.setPixmap(QPixmap("assets/MainGameWindow/BaseBackgroundMain.png"))
+        self.base_background.setScaledContents(True)
+        self.base_background.setGeometry(0, 0, 1920, 1080)
+        self.build_hud_progress_bar()
+        self.background = QLabel(self)
+        self.background.setPixmap(QPixmap("assets/StudyWindow/BackgroundStudy.png"))
+        self.background.setScaledContents(True)
+        self.background.setGeometry(0, 0, 1920, 1080)
+        self.build_hud_status_player()
+        self.book_study = InteractiveImage(
+            "assets/StudyWindow/BookStudy.png",
+            480, 120, 1000, 700,
+            self
+        )
+        font = QFont()
+        font.setPointSize(22)
+        self.label_study = QLabel("Click on the book to study.", self)
+        self.label_study.setStyleSheet("color: white;")
+        self.label_study.setFont(font)
+        self.label_study.setGeometry(800, 800, 450, 40)
+        font2 = QFont()
+        font2.setPointSize(18)
+        self.label_study2 = QLabel("Each click equals +1 dev skill", self)
+        self.label_study2.setStyleSheet("color: white;")
+        self.label_study2.setFont(font2)
+        self.label_study2.setGeometry(815, 840, 450, 40)
+
+        self.book_study.clicked.connect(lambda : self.player.charge_dev_skill(1))
 
 class FeedingWindow(Window) :
     def __init__(self, main_window, player) :
