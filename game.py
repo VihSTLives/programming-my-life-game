@@ -1,10 +1,10 @@
 class Player :
     def __init__(self) :
         self.health = 100
-        self.thirst = 0
-        self.hunger = 0
+        self.thirst = 90
+        self.hunger = 90
         self.dev_skill = 1
-        self.money = 0
+        self.money = 50
         self.sleep = 16
 
         self.max_health = 100

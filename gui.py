@@ -33,8 +33,8 @@ class MainWindow(QMainWindow) :
         self.setCentralWidget(new_window)
 
     def game_tick(self):
-        self.player.charge_hunger(0.01)
-        self.player.charge_thirst(0.01)
+        self.player.charge_hunger(0.02)
+        self.player.charge_thirst(0.02)
 
         if (
         self.player.hunger >= self.player.max_hunger
@@ -400,6 +400,95 @@ class FeedingWindow(Window) :
     def build_it(self) :
         self.setWindowTitle("- Feeding -")
         self.resize(1920, 1080)
+
+        self.base_background = QLabel(self)
+        self.base_background.setPixmap(QPixmap("assets/MainGameWindow/BaseBackgroundMain.png"))
+        self.base_background.setScaledContents(True)
+        self.base_background.setGeometry(0, 0, 1920, 1080)
+
+        self.build_hud_progress_bar()
+
+        self.background = QLabel(self)
+        self.background.setPixmap(QPixmap("assets/FeedingWindow/BackgroundFeeding.png"))
+        self.background.setScaledContents(True)
+        self.background.setGeometry(0, -6, 1920, 1080)
+
+        self.build_hud_status_player()
+
+        self.water = InteractiveImage(
+            "assets/FeedingWindow/Water.png",
+            150, 250, 170, 370,
+            self
+        )
+
+        self.soda = InteractiveImage(
+            "assets/FeedingWindow/Soda.png",
+            620, 80, 220, 370,
+            self
+        )
+
+        self.sandwich = InteractiveImage(
+            "assets/FeedingWindow/Sandwich.png",
+            1030, 100, 370, 320,
+            self
+        )
+
+        self.burger = InteractiveImage(
+            "assets/FeedingWindow/Burger.png",
+            1500, 100, 370, 320,
+            self
+        )
+
+        font = QFont()
+        font.setPointSize(22)
+
+        self.label_water = QLabel("Water\n \nPrice: R$3.00\n \nRestores 30 thirst.\n \nA simple glass of water. Not exciting, but it keeps you alive and focused.", self)
+        self.label_water.setStyleSheet("color: white;")
+        self.label_water.setFont(font)
+        self.label_water.setWordWrap(True)
+        self.label_water.setGeometry(70, 570, 400, 500)
+
+        self.label_soda = QLabel("Soda\n \nPrice: R$15.00\n \nRestores 20 thirst and 5 hunger.\n \nCold, sweet, and refreshing. Not the healthiest option, but it gives a quick boost.", self)
+        self.label_soda.setStyleSheet("color: white;")
+        self.label_soda.setFont(font)
+        self.label_soda.setWordWrap(True)
+        self.label_soda.setGeometry(560, 470, 400, 500)
+
+        self.label_sandwich = QLabel("Sandwich\n \nPrice: R$8.00\n \nRestores 25 hunger and 5 thirst.\n \nA basic homemade sandwich. Simple fuel to keep coding for a little longer.", self)
+        self.label_sandwich.setStyleSheet("color: white;")
+        self.label_sandwich.setFont(font)
+        self.label_sandwich.setWordWrap(True)
+        self.label_sandwich.setGeometry(1020, 470, 400, 500)
+
+        self.label_burger = QLabel("Hamburger\n \nPrice: R$30.00\n \nRestores 40 hunger and 10 thirst.\n \nA big, greasy burger. Expensive, but nothing destroys hunger faster.", self)
+        self.label_burger.setStyleSheet("color: white;")
+        self.label_burger.setFont(font)
+        self.label_burger.setWordWrap(True)
+        self.label_burger.setGeometry(1485, 470, 400, 500)
+
+        self.water.clicked.connect(self.drink_water)
+        self.soda.clicked.connect(self.drink_soda)
+        self.sandwich.clicked.connect(self.eat_sandwich)
+        self.burger.clicked.connect(self.eat_burger)
+
+    def drink_water(self) :
+        if self.player.money >= 3 :
+            self.player.charge_thirst(-30)
+
+    def drink_soda(self) :
+        if self.player.money >= 15 :
+            self.player.charge_thirst(-20)
+            self.player.charge_hunger(-5)
+
+    def eat_sandwich(self) :
+        if self.player.money >= 8 :
+            self.player.charge_hunger(-25)
+            self.player.charge_thirst(-5)
+
+    def eat_burger(self) :
+        if self.player.money >= 30 :
+            self.player.charge_hunger(-40)
+            self.player.charge_thirst(-10)
 
 class WorkWindow(Window) :
     def __init__(self, main_window, player) :
