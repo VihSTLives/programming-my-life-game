@@ -473,20 +473,24 @@ class FeedingWindow(Window) :
 
     def drink_water(self) :
         if self.player.money >= 3 :
+            self.player.money -= 3
             self.player.charge_thirst(-30)
 
     def drink_soda(self) :
         if self.player.money >= 15 :
+            self.player.money -= 15
             self.player.charge_thirst(-20)
             self.player.charge_hunger(-5)
 
     def eat_sandwich(self) :
         if self.player.money >= 8 :
+            self.player.money -= 8
             self.player.charge_hunger(-25)
             self.player.charge_thirst(-5)
 
     def eat_burger(self) :
         if self.player.money >= 30 :
+            self.player.money -= 30
             self.player.charge_hunger(-40)
             self.player.charge_thirst(-10)
 
