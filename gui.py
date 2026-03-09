@@ -12,6 +12,7 @@ from PySide6.QtGui import QPixmap
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtCore import QTimer
 from PySide6.QtGui import QFont
+import time
 
 class MainWindow(QMainWindow) :
     def __init__(self, player) : 
@@ -85,6 +86,7 @@ class Window(QWidget) :
         self.thirst_bar_max_width = 250
         self.hunger_bar_max_width = 250
         self.sleep_bar_max_width = 250
+        
         self.health_fill = QLabel(self)
         self.health_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBarHealth.png"))
         self.health_fill.setScaledContents(True)
@@ -95,6 +97,7 @@ class Window(QWidget) :
             self.player.max_health,
             self.health_bar_max_width
         )
+        
         self.thirst_fill = QLabel(self)
         self.thirst_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBar.png"))
         self.thirst_fill.setScaledContents(True)
@@ -105,6 +108,7 @@ class Window(QWidget) :
             self.player.max_thirst,
             self.thirst_bar_max_width
         )
+        
         self.hunger_fill = QLabel(self)
         self.hunger_fill.setPixmap(QPixmap("assets/MainGameWindow/ProgressStatusBar.png"))
         self.hunger_fill.setScaledContents(True)
@@ -119,26 +123,32 @@ class Window(QWidget) :
     def build_hud_status_player(self) :
         font = QFont()
         font.setPointSize(22)
+        
         self.label_health = QLabel("HEALTH", self)
         self.label_health.setStyleSheet("color: white;")
         self.label_health.setFont(font)
         self.label_health.setGeometry(70, 7, 220, 40)
+        
         self.label_thirst = QLabel("THIRST", self)
         self.label_thirst.setStyleSheet("color: white;")
         self.label_thirst.setFont(font)
         self.label_thirst.setGeometry(70, 49, 220, 40)
+        
         self.label_hunger = QLabel("HUNGER", self) 
         self.label_hunger.setStyleSheet("color: white;")
         self.label_hunger.setFont(font)
         self.label_hunger.setGeometry(60, 92, 220, 40)
+        
         self.label_dev_skill = QLabel("Dev Skill: " + str(self.player.dev_skill), self)
         self.label_dev_skill.setStyleSheet("color: white;")
         self.label_dev_skill.setFont(font)
         self.label_dev_skill.setGeometry(40, 130, 300, 40)
+        
         self.label_money = QLabel("Money: $" + str(self.player.money), self)
         self.label_money.setStyleSheet("color: white;")
         self.label_money.setFont(font)
         self.label_money.setGeometry(40, 160, 350, 40)
+        
         self.label_sleep = QLabel("Hours Left: " + str(self.player.sleep), self)
         self.label_sleep.setStyleSheet("color: white;")
         self.label_sleep.setFont(font)
@@ -163,31 +173,37 @@ class Window(QWidget) :
 class MainMenuWindow(Window) :
     def __init__(self, main_window, player) :
         super().__init__(main_window, player)
-
         self.build_it()
 
     
     def build_it(self) :
         self.setWindowTitle("- Main Menu -")
         self.resize(1920, 1080)
+        
         self.background = QLabel(self)
         self.background.setPixmap(QPixmap("assets/MainMenuWindow/backgroundMainMenu.png"))
         self.background.setScaledContents(True)
         self.background.setGeometry(0, 0, 1920, 1080)
+        
         self.logo = QLabel(self)
         self.logo.setPixmap(QPixmap("assets/MainMenuWindow/logoMainMenu.png"))
         self.logo.setScaledContents(True)
+        
         self.logo_pos_x = 510
         self.logo_pos_y = 120
+        
         self.logo_direction = "CENTER"
         self.logo.setGeometry(self.logo_pos_x, self.logo_pos_y, 900, 350)
+        
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_animation)
         self.timer.start(85)
+        
         font = QFont()
         font.setPointSize(24)
         font.setBold(True)
         font.setFamily("Arial")
+        
         self.play_button = QPushButton("Play", self)
         self.play_button.setGeometry(460,675,400,100)
         self.play_button.setFont(font)
@@ -205,6 +221,7 @@ class MainMenuWindow(Window) :
                 background-color: #0f0f0f;
             }
             """)
+        
         self.play_button.clicked.connect(lambda : self.main_window.charge_window(MainGameWindow))
         self.exit_button = QPushButton("Exit", self)
         self.exit_button.setGeometry(1060,675,400,100)
@@ -251,24 +268,29 @@ class MainGameWindow(Window) :
     def build_it(self) :
         self.setWindowTitle("- Main Game -")
         self.resize(1920, 1080)
+        
         self.base_background = QLabel(self)
         self.base_background.setPixmap(QPixmap("assets/MainGameWindow/BaseBackgroundMain.png"))
         self.base_background.setScaledContents(True)
         self.base_background.setGeometry(0, 0, 1920, 1080)
         self.build_hud_progress_bar()
+        
         self.background = QLabel(self)
         self.background.setPixmap(QPixmap("assets/MainGameWindow/BackgroundMainGame.png"))
         self.background.setScaledContents(True)
         self.background.setGeometry(0, 0, 1920, 1080)
+        
         self.base_background.lower()
         self.health_fill.raise_()
         self.thirst_fill.raise_()
         self.hunger_fill.raise_()
         self.background.raise_()
+        
         self.blackbase = QLabel(self)
         self.blackbase.setPixmap(QPixmap("assets/MainGameWindow/BlackBase.png"))
         self.blackbase.setScaledContents(True)
         self.blackbase.setGeometry(1460,393,350,400)
+        
         self.bookCase = InteractiveImage(
             "assets/MainGameWindow/BookcaseMainGame.png",
             20, 260, 300, 600,
@@ -294,7 +316,9 @@ class MainGameWindow(Window) :
             940, 460, 550, 600,
             self
         )
+
         self.build_hud_status_player()
+        
         self.bookCase.clicked.connect(lambda : self.main_window.charge_window(StudyWindow))
         self.beg.clicked.connect(lambda : self.main_window.charge_window(FeedingWindow))
         self.computer.clicked.connect(lambda : self.main_window.charge_window(WorkWindow))
@@ -314,7 +338,9 @@ class StudyWindow(Window) :
         self.base_background.setPixmap(QPixmap("assets/MainGameWindow/BaseBackgroundMain.png"))
         self.base_background.setScaledContents(True)
         self.base_background.setGeometry(0, 0, 1920, 1080)
+       
         self.build_hud_progress_bar()
+        
         self.background = QLabel(self)
         self.background.setPixmap(QPixmap("assets/StudyWindow/BackgroundStudy.png"))
         self.background.setScaledContents(True)
@@ -325,12 +351,14 @@ class StudyWindow(Window) :
             480, 120, 1000, 700,
             self
         )
+        
         font = QFont()
         font.setPointSize(22)
         self.label_study = QLabel("Click on the book to study.", self)
         self.label_study.setStyleSheet("color: white;")
         self.label_study.setFont(font)
         self.label_study.setGeometry(800, 800, 450, 40)
+        
         font2 = QFont()
         font2.setPointSize(18)
         self.label_study2 = QLabel("Each click equals +1 dev skill", self)
@@ -367,9 +395,8 @@ class StudyWindow(Window) :
 class FeedingWindow(Window) :
     def __init__(self, main_window, player) :
         super().__init__(main_window, player)
-    
         self.build_it()
-    
+
     def build_it(self) :
         self.setWindowTitle("- Feeding -")
         self.resize(1920, 1080)
@@ -377,9 +404,8 @@ class FeedingWindow(Window) :
 class WorkWindow(Window) :
     def __init__(self, main_window, player) :
         super().__init__(main_window, player)
-    
         self.build_it()
-    
+
     def build_it(self) :
         self.setWindowTitle("- Work -")
         self.resize(1920, 1080)
@@ -387,17 +413,32 @@ class WorkWindow(Window) :
 class SleepingWindow(Window) :
     def __init__(self, main_window, player) :
         super().__init__(main_window, player)
-    
         self.build_it()
-    
+
     def build_it(self) :
         self.setWindowTitle("- Sleeping -")
         self.resize(1920, 1080)
 
+        self.base_background = QLabel(self)
+        self.base_background.setPixmap(QPixmap("assets/SleepingWindow/BackgroundSleeping.png"))
+        self.base_background.setScaledContents(True)
+        self.base_background.setGeometry(0, 0, 1920, 1080)
+
+        font = QFont()
+        font.setPointSize(28)
+
+        self.label_study = QLabel("Sleeping...", self)
+        self.label_study.setStyleSheet("color: white;")
+        self.label_study.setFont(font)
+        self.label_study.setGeometry(850, 500, 500, 50)
+
+        self.player.charge_sleep(16)
+
+        QTimer.singleShot(3000, lambda : self.main_window.charge_window(MainGameWindow))
+
 class UniversityWindow(Window) :
     def __init__(self, main_window, player) :
         super().__init__(main_window, player)
-    
         self.build_it()
     
     def build_it(self) :
